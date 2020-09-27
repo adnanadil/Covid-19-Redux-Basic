@@ -3,10 +3,28 @@ import './App.css';
 import CountryCardHolder from '../components/CountryCardHolder';
 import TopArea from '../components/TopArea';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Dropdown from 'react-bootstrap/Dropdown'
-import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import {connect} from 'react-redux'
+import {searchField} from '../actions'
 
 
+const mapStatesToProps = (state) => {
+
+  return{
+    searchedValue: state.searchedTextState,
+    searchedValue2: state.searchedTextState2
+  }
+
+}
+
+const mapDispathToProps = dispath => {
+
+  return {
+    onSearchFunction : event => dispath(searchField(event.target.value))
+  }
+
+}
 
 class App extends React.Component {
   
@@ -150,7 +168,8 @@ class App extends React.Component {
 
       
           <TopArea
-            onSearchFunction = {this.onSearch}
+            //onSearchFunction = {this.onSearch}
+            onSearchFunction = {this.props.onSearchFunction}
             onClick1 = {this.onClickHighestOverall}
             onClick2 = {this.onClickHigestDaily}
           ></TopArea>
@@ -182,4 +201,4 @@ class App extends React.Component {
   
 }
 
-export default App;
+export default connect(mapStatesToProps, mapDispathToProps)(App);
