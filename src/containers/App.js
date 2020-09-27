@@ -19,6 +19,7 @@ class App extends React.Component {
     this.state = {searched: ''}
     this.state = {done: false}
     this.state = {sorted: false}
+    this.state = {countryRank: {}}
   }
 
   componentDidMount(){
@@ -64,8 +65,11 @@ class App extends React.Component {
       return `${eachCounrtyObj["Country"]}`.toLowerCase().includes(stringz.toLowerCase());
     })
     
+    
+
     this.setState({countriesArray: searchedCounrtyArray})
-    this.setState({sorted: false})
+    //this.setState({sorted: false})
+    this.setState({sorted: true})
     //console.log(`hello brother: ${searchedCounrtyArray}`)
     
   }
@@ -79,6 +83,19 @@ class App extends React.Component {
     this.setState({countriesArray: totalCases})
     this.setState({sorted: true})
 
+    var dict = []; 
+
+    totalCases.forEach ((country, rank) => {
+      dict.push({
+        key:   country["Country"],
+        value: rank + 1
+        })
+      });
+
+      let dictionary = Object.assign({}, ...dict.map((x) => ({[x.key]: x.value})));
+
+      this.setState({countryRank : dictionary})
+
    
   }
 
@@ -91,7 +108,22 @@ class App extends React.Component {
     this.setState({countriesArray: totalCases})
     this.setState({sorted: true})
 
-   
+    // We are making an array of dictonary, the dict has the country name and its rank.
+    // The key is the name of the country and the rank is the rank
+    // We will then convert this array into a dictonary that has the country name and its rank
+    // We search for the country (key) and get the value (rank)
+    var dict = []; 
+
+    totalCases.forEach ((country, rank) => {
+      dict.push({
+        key:   country["Country"],
+        value: rank + 1
+        })
+      });
+
+      let dictionary = Object.assign({}, ...dict.map((x) => ({[x.key]: x.value})));
+
+      this.setState({countryRank : dictionary})   
   }
 
   render(){
@@ -106,7 +138,7 @@ class App extends React.Component {
           ></TopArea>
 
           <div className ="main">
-            <div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
           </div>
         </div>
       );
@@ -139,6 +171,7 @@ class App extends React.Component {
           <CountryCardHolder
             dataRecieved = {this.state.countriesArray}
             sorted = {this.state.sorted}
+            countryRank = {this.state.countryRank}
           >
           </CountryCardHolder>
         </div>
