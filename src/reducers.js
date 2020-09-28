@@ -1,20 +1,46 @@
-const initialSearchState = {
-    searchedTextState : ""
-}
 
-export const searchedText = (state = initialSearchState, action = {}) => {
 
-    console.log(action.payload)
+export const searchedText = (state = initialDataState, action = {}) => {
+
     return Object.assign({}, state, { searchedTextState: action.payload})
 }
 
-const initialSearchState2 = {
-    searchedTextState2 : ""
+const initialDataState = {
+    searchedTextState : "",
+    countriesArrayRedux : [],
+    isPending: true
 }
 
-export const searchedText2 = (state = initialSearchState, action) => {
-    console.log(`This is from 2: ${action.payload}`)
-    return Object.assign({}, state, { initialSearchState2: action.payload})
+export const gettingDataReducer = (state = initialDataState, action = {}) => {
+    
+    switch (action.type) {
+        case 'PENDING':
+          return Object.assign({}, state, {isPending: true})
+        case 'SUCCESS':
+            console.log(action.payload)
+          return Object.assign({}, state, {countriesArrayRedux: action.payload, isPending: false})
+        case 'FAILED':
+          return Object.assign({}, state, {error: action.payload})
+        case 'UPDATE_COUNTRIES':
+            return Object.assign({}, state, {countriesArrayRedux: action.payload})
+        case 'SEARCHFIELD_CHANGED':
+            return Object.assign({}, state, { searchedTextState: action.payload})
+        default:
+          return state
+      }
 }
+
+
+
+export const updateCountryArray = (state = initialDataState, action = {}) => {
+
+    if (action.type == 'HI'){
+        return Object.assign({}, state, {countriesArrayRedux: action.payload})
+    }else {
+        return state
+    }
+
+}
+
 
 

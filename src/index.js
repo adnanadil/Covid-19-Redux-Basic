@@ -4,13 +4,14 @@ import './index.css';
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
 import {Provider} from 'react-redux';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import {searchedText, searchedText2} from './reducers';
+import {createStore, applyMiddleware, combineReducers} from 'redux'
+import {searchedText, gettingDataReducer, updateCountryArray} from './reducers';
 import thunkMiddleware from 'redux-thunk'
 
 const rootReducer = combineReducers({
   searchedText, 
-  searchedText2
+  gettingDataReducer,
+  updateCountryArray
 })
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));

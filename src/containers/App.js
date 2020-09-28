@@ -6,14 +6,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import {connect} from 'react-redux'
-import {searchField} from '../actions'
+import {searchField, requestCountries} from '../actions'
 
 
 const mapStatesToProps = (state) => {
 
   return{
-    searchedValue: state.searchedTextState,
-    searchedValue2: state.searchedTextState2
+    searchedValue: state.gettingDataReducer.searchedTextState,
+    countriesDataFetched: state.gettingDataReducer.countriesArrayRedux,
+    isPending: state.gettingDataReducer.isPending
   }
 
 }
@@ -21,7 +22,10 @@ const mapStatesToProps = (state) => {
 const mapDispathToProps = dispath => {
 
   return {
-    onSearchFunction : event => dispath(searchField(event.target.value))
+    onSearchFunction : event => dispath(searchField(event.target.value)),
+    onGetArray: () => dispath(requestCountries(data => {
+      console.log(`#MeToo: ${data}`)
+    }))
   }
 
 }
@@ -38,27 +42,37 @@ class App extends React.Component {
     this.state = {done: false}
     this.state = {sorted: false}
     this.state = {countryRank: {}}
+    this.state = {canCarryOn: false}
   }
 
+  componentDidUpdate(prevProps) {
+    console.log(prevProps);
+    console.log(`here: ${this.props.isPending}`);
+
+    
+    if (this.props.isPending !== prevProps.isPending) {
+      
+      //this.setState({countriesArrayRecieved: this.props.countriesDataFetched})
+      console.log(`Hello Bhai we got the solution ${this.props.countriesDataFetched}`);
+      this.setState({countriesArrayRecieved : this.props.countriesDataFetched})
+      this.setState({countriesArray : this.props.countriesDataFetched})
+      this.setState({canCarryOn : true})
+    }
+    
+  }
+
+
+
   componentDidMount(){
+
+    this.props.onGetArray()
+
+    /*
     fetch('https://api.covid19api.com/summary')
-    //fetch('https://jsonplaceholder.typicode.com/users')
       .then(resp => resp.json())
-      //.then(data => JSON.parse({data}))
-      //.then(dataObject => this.setState({dataArray: data}))
-      //.then(dataObject => console.log({dataObject}))
       .then(data => {
         for (let [key, value] of Object.entries(data)) {
-         /* 
-         if (key === "Global"){
-          console.log(`This is ${key}: ${value}`)
-          this.setState({globalObject: value})
-          console.log(this.state.globalObject)
          
-          }
-          */
-        
-
          if (key === "Countries"){
           //console.log(`This is ${key}: ${value}`)
           this.setState({countriesArray: value})
@@ -71,6 +85,7 @@ class App extends React.Component {
          }
         }
       }).finally(this.setState({done: true}))
+      */
   }
 
   onSearch = (event) =>{
@@ -145,8 +160,13 @@ class App extends React.Component {
   }
 
   render(){
+
+    var checkTimes = 0;
     
-    if (this.state.countriesArray === undefined){
+    console.log(` I'm the one ${this.state.countriesArray}`)
+
+    //if (this.state.countriesArray === undefined){
+    if (this.props.isPending){
       return(
         <div className="App">
           <TopArea
@@ -163,38 +183,49 @@ class App extends React.Component {
     }
     else {
 
-      return (
-        <div className="App">
+      // Logic here
 
-      
-          <TopArea
-            //onSearchFunction = {this.onSearch}
-            onSearchFunction = {this.props.onSearchFunction}
-            onClick1 = {this.onClickHighestOverall}
-            onClick2 = {this.onClickHigestDaily}
-          ></TopArea>
-
-          <div className = "dropDownDiv">
-            <DropdownButton
-                  className = "dropDownButt"
-                  alignRight
-                  title="Sort By"
-                  id="dropdown-menu-align-left"
+      //console.log(`This is the one: ${this.props.countriesDataFetched}`)
+      //
+      //if (this.props.countriesDataFetched.length >0){
+      if (this.state.canCarryOn){
+        return (
+          <div className="App">
+            <TopArea
+              onSearchFunction = {this.onSearch}
+              //onSearchFunction = {this.props.onSearchFunction}
+              //onClick1 = {this.onClickHighestOverall}
+              //onClick2 = {this.onClickHigestDaily}
+            ></TopArea>
+  
+            <div className = "dropDownDiv">
+              <DropdownButton
+                    className = "dropDownButt"
+                    alignRight
+                    title="Sort By"
+                    id="dropdown-menu-align-left"
+              >
+                <Dropdown.Item onSelect={this.onClickHigestDaily}>Highest Daily</Dropdown.Item>
+                <Dropdown.Item onSelect={this.onClickHighestOverall}>Overall Cases</Dropdown.Item>
+              </DropdownButton>
+            </div>
+              
+  
+            <CountryCardHolder
+              dataRecieved = {this.state.countriesArray}
+              //dataRecieved = {this.props.countriesDataFetched}
+              sorted = {this.state.sorted}
+              countryRank = {this.state.countryRank}
+              
             >
-              <Dropdown.Item onSelect={this.onClickHigestDaily}>Highest Daily</Dropdown.Item>
-              <Dropdown.Item onSelect={this.onClickHighestOverall}>Overall Cases</Dropdown.Item>
-            </DropdownButton>
+            </CountryCardHolder>
           </div>
-            
-
-          <CountryCardHolder
-            dataRecieved = {this.state.countriesArray}
-            sorted = {this.state.sorted}
-            countryRank = {this.state.countryRank}
-          >
-          </CountryCardHolder>
-        </div>
-      );
+        );
+      }else {
+        return(
+          <div></div>
+        );
+      }
     }
     
   }
